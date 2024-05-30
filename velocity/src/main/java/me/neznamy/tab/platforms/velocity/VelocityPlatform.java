@@ -1,6 +1,5 @@
 package me.neznamy.tab.platforms.velocity;
 
-import com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
@@ -16,7 +15,6 @@ import me.neznamy.tab.shared.features.redis.RedisSupport;
 import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
-import me.neznamy.tab.shared.util.ReflectionUtils;
 import net.kyori.adventure.text.Component;
 import org.bstats.charts.SimplePie;
 import org.jetbrains.annotations.NotNull;
@@ -59,11 +57,16 @@ public class VelocityPlatform extends ProxyPlatform {
     @Override
     @Nullable
     public RedisSupport getRedisSupport() {
+        return new VelocityRedisSupport(plugin);
+
+        /* Old code used with RedisBungee
         if (ReflectionUtils.classExists("com.imaginarycode.minecraft.redisbungee.RedisBungeeAPI") &&
                 RedisBungeeAPI.getRedisBungeeApi() != null) {
             return new VelocityRedisSupport(plugin);
         }
+
         return null;
+         */
     }
 
     @Override
