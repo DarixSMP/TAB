@@ -1,3 +1,9 @@
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: password
+  cluster: GLOBAL_TAB
+
 # https://github.com/NEZNAMY/TAB/wiki/Feature-guide:-Header-&-Footer
 header-footer:
   enabled: true
