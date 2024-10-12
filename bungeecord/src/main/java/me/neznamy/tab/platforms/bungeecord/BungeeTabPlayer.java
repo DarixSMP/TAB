@@ -71,7 +71,20 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
 
     @Override
     public void sendMessage(@NotNull TabComponent message) {
-        getPlayer().sendMessage((BaseComponent) message.convert(getVersion()));
+        try {
+            getPlayer().sendMessage((BaseComponent) message.convert(getVersion()));
+        } catch (NullPointerException BungeeCordBug) {
+            // java.lang.NullPointerException: Cannot invoke "net.md_5.bungee.protocol.MinecraftEncoder.getProtocol()" because the return value of "io.netty.channel.ChannelPipeline.get(java.lang.Class)" is null
+            //	at net.md_5.bungee.netty.ChannelWrapper.getEncodeProtocol(ChannelWrapper.java:51)
+            //	at net.md_5.bungee.UserConnection.sendPacketQueued(UserConnection.java:198)
+            //	at net.md_5.bungee.UserConnection.sendMessage(UserConnection.java:565)
+            //	at net.md_5.bungee.UserConnection.sendMessage(UserConnection.java:520)
+            //	at net.md_5.bungee.UserConnection.sendMessage(UserConnection.java:508)
+            if (TAB.getInstance().getConfiguration().isDebugMode()) {
+                TAB.getInstance().getErrorManager().printError("Failed to send message to player " + getName() +
+                        " (online = " + getPlayer().isConnected() + "): " + message.convert(getVersion()), BungeeCordBug);
+            }
+        }
     }
 
     @Override
@@ -80,8 +93,13 @@ public class BungeeTabPlayer extends ProxyTabPlayer {
         LoginResult loginResult = ((InitialHandler)getPlayer().getPendingConnection()).getLoginProfile();
         if (loginResult == null) return null;
         Property[] properties = loginResult.getProperties();
-        if (properties == null || properties.length == 0) return null; //Offline mode
-        return new TabList.Skin(properties[0].getValue(), properties[0].getSignature());
+        if (properties == null) return null; //Offline mode
+        for (Property property : properties) {
+            if (property.getName().equals(TabList.TEXTURES_PROPERTY)) {
+                return new TabList.Skin(property.getValue(), property.getSignature());
+            }
+        }
+        return null;
     }
 
     @Override

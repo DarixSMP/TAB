@@ -8,7 +8,6 @@ import me.neznamy.tab.platforms.velocity.features.VelocityRedisSupport;
 import me.neznamy.tab.platforms.velocity.hook.VelocityPremiumVanishHook;
 import me.neznamy.tab.shared.TAB;
 import me.neznamy.tab.shared.TabConstants;
-import me.neznamy.tab.shared.chat.EnumChatFormat;
 import me.neznamy.tab.shared.chat.TabComponent;
 import me.neznamy.tab.shared.features.injection.PipelineInjector;
 import me.neznamy.tab.shared.features.redis.RedisSupport;
@@ -16,6 +15,8 @@ import me.neznamy.tab.shared.hook.AdventureHook;
 import me.neznamy.tab.shared.hook.PremiumVanishHook;
 import me.neznamy.tab.shared.proxy.ProxyPlatform;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bstats.charts.SimplePie;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,6 +30,9 @@ public class VelocityPlatform extends ProxyPlatform {
 
     @NotNull
     private final VelocityTAB plugin;
+
+    /** Logger for components */
+    private static final ComponentLogger logger = ComponentLogger.logger("TAB");
 
     /** Plugin message channel */
     @Getter
@@ -71,12 +75,12 @@ public class VelocityPlatform extends ProxyPlatform {
 
     @Override
     public void logInfo(@NotNull TabComponent message) {
-        plugin.getLogger().info(message.toLegacyText());
+        logger.info(AdventureHook.toAdventureComponent(message, true));
     }
 
     @Override
     public void logWarn(@NotNull TabComponent message) {
-        plugin.getLogger().warn(EnumChatFormat.RED + message.toLegacyText());
+        logger.warn(Component.text("").color(NamedTextColor.RED).append(AdventureHook.toAdventureComponent(message, true)));
     }
 
     @Override
